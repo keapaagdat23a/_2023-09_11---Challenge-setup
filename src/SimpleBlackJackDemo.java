@@ -10,7 +10,7 @@ public class SimpleBlackJackDemo {
   public void initVariables() {
     playerStillAlive = true;
     dealerStillAlive = true;
-    playerSum = 0;
+    playerSum = 21;
     dealerSum = 0;
   }
 
@@ -23,13 +23,36 @@ public class SimpleBlackJackDemo {
     initVariables();
     do {
       userPlays();
-      if (askDealerHitOrStand())
+      if (askDealertoProceed())
         dealerPlays();
     } while (playerStillAlive && dealerStillAlive);
     printResult();
   }
 
+  private boolean askDealertoProceed() {
+    // NOTE: This is a bit different than the description to better reflect actual rules
+    if ((dealerSum < playerSum) && playerStillAlive) {
+      System.out.println("Dealer says HIT ME!");
+      return true;
+    }
+    else {
+      System.out.println("Dealer says STAND!");
+      return false;
+    }
+  }
+
+  private void printWelcomeMessage() {
+    System.out.println("\nWELCOME TO SIMPLE BLACK JACK\n");
+  }
+
   private void dealerPlays() {
+    int card = drawCard();
+    dealerSum += card;
+    if (dealerSum > 21) {
+      dealerStillAlive = false;
+      System.out.println("Dealer lost.");
+    } else
+      System.out.println("Dealer sum: " + dealerSum);
   }
 
   private void printResult() {
@@ -41,15 +64,6 @@ public class SimpleBlackJackDemo {
       System.out.printf("It's a tie by %d-%d.", dealerSum, playerSum);
   }
 
-  private boolean askDealerProceedOrNot() {
-    if (dealerSum > 17)
-      return false;
-    else
-      return true;
-    // Todo
-    // If above 21, dealer LOOSES
-  }
-
   public char askUserHitOrStand() {
     Scanner in = new Scanner(System.in);
     System.out.print("HIT or STAND (h/s)? ");
@@ -58,13 +72,16 @@ public class SimpleBlackJackDemo {
   }
 
   private void userPlays() {
-    askUserHitOrStand();
-    int card = drawCard();
-    playerSum += card;
-    if (playerSum > 21) {
-      System.out.println("Player above 21: " + playerSum);
-      playerStillAlive = false;
-    }
+    if (askUserHitOrStand() == 'H') {
+      int card = drawCard();
+      playerSum += card;
+      if (playerSum > 21) {
+        System.out.println("Player above 21: " + playerSum);
+        playerStillAlive = false;
+      } else
+        System.out.println("Sum: " + playerSum);
+    } else
+      System.out.println("User stands.");
   }
 
   private int drawCard() {
